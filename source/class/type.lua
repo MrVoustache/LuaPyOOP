@@ -227,7 +227,7 @@ function Type:__tostring()
     if self.__name == nil then
         error("No!")
     end
-    return "Class <"..tostring(self.__name)..">"
+    return "<Class '"..tostring(self.__name).."'>"
 end
 
 
