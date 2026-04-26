@@ -4,12 +4,10 @@
 
 
 
-local type_system = ...
-
-
 local NotImplemented = {}
-_G.NotImplemented = NotImplemented
-builtins.NotImplemented = NotImplemented
+type_system.NotImplemented = NotImplemented
+type_system.globals.NotImplemented = NotImplemented
+type_system.builtins.NotImplemented = NotImplemented
 
 type_system.pythonic_overloading_metatable = {}
 

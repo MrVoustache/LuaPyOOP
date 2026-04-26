@@ -4,8 +4,6 @@
 
 
 
-local type_system = ...
-
 --- Initialize base classes (Object and Type)
 
 local function pre_classify(name, cls, bases, metaclass, make_methods)
@@ -20,7 +18,7 @@ local function pre_classify(name, cls, bases, metaclass, make_methods)
             error("expected string for key in class dict, got '"..tostring(type_system.type(key)).."'", 2)
         end
         if type_system.type(value) == "function" then
-            value = log_wrap(value)
+            value = _log_wrap(value)
             if make_methods then
                 
             end
@@ -80,23 +78,25 @@ post_classify(type_system.Method)
 ---@param cls Type<T> The table that will become a class.
 ---@param bases Type<T>[]? The list of bases of this class. Defaults to {Object}.
 ---@param metaclass Type<Type<T>>? The metaclass to use for the class, instead of Type.
+---@return Type<T> cls The same input class.
 local function classify(name, cls, bases, metaclass)
-    if not builtins.isinstance(name, "string") then
+    if not type_system.builtins.isinstance(name, "string") then
         error("expected string for argument #1, got '"..type(name).."'", 2)
     end
-    if not builtins.isinstance(cls, "table") then
+    if not type_system.builtins.isinstance(cls, "table") then
         error("expected table for argument #2, got '"..type(cls).."'", 2)
     end
-    if bases ~= nil and not builtins.isinstance(bases, "table") then
+    if bases ~= nil and not type_system.builtins.isinstance(bases, "table") then
         error("expected table for argument #3, got '"..type(bases).."'", 2)
     end
-    if metaclass ~= nil and not builtins.isinstance(metaclass, type_system.Type) then
+    if metaclass ~= nil and not type_system.builtins.isinstance(metaclass, type_system.Type) then
         error("expected Type for argument #4, got '"..type(metaclass).."'", 2)
     end
     bases = bases or {Object}
     metaclass = metaclass or Type
     pre_classify(name, cls, bases, metaclass, true)
     post_classify(cls)
+    return cls
 end
 type_system.builtins.classify = classify
 type_system.globals.classify = classify

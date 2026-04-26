@@ -4,7 +4,6 @@
 
 
 
-local type_system = ...
 type_system.old_type = type
 type_system.old_getmetatable = getmetatable
 type_system.old_setmetatable = setmetatable
@@ -12,10 +11,6 @@ type_system.old_setmetatable = setmetatable
 type_system.classes = {}          ---@type table<Type, boolean> A set of classes. Used by isinstance and issubclass to check for class membership and inheritance without infinite recursion.
 
 local builtins = {}
-if _G.builtins ~= nil then
-    return
-end
-_G.builtins = builtins
 type_system.builtins = builtins
 
 local globals = {}

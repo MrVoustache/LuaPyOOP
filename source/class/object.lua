@@ -4,8 +4,6 @@
 
 
 
-local type_system = ...
-
 ---@class Object The base class for all objects. Every instance of a class created with the class function will have Object as a base class, and every class created with the class function will have Object as a base class as well (since all classes have Type as a base class, and Type has Object as a base class).
 ---@field __dict table A table of fields defined in the object.
 local Object = {}

@@ -4,8 +4,6 @@
 
 
 
-local type_system = ...
-
 ---@generic T
 ---@class Type<T> : Object The type of classes. Every class created with the class function is an instance of Type, and every instance of a class created with the class function has its class as its type
 ---@field __name string The name of the class.
@@ -152,7 +150,7 @@ function Type:__setindex(key, value)
     log("Calling type __setindex for key '"..tostring(key).."'")
     type_system.invalidate_cache(self)
     if type_system.type(value) == "function" then
-        value = log_wrap(value)
+        value = _log_wrap(value)
         log("Wrapping function value for key '"..tostring(key).."' in class '"..tostring(self.__name).."' as a method")
         value = type_system.Method(value)
     end

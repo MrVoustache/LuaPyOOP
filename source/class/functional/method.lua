@@ -4,8 +4,6 @@
 
 
 
-local type_system = ...
-
 ---@generic T
 ---@class Method : Object A method of a class. This is a wrapper around a function that allows it to retain the name and class it is bound to.
 ---@field __func fun(instance : T, ...) The underlying function of the method.

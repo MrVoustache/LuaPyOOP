@@ -1,4 +1,4 @@
-local type_system = {}
+type_system = {}
 local globals_enabled = true
 local loaded = false
 
@@ -11,6 +11,7 @@ local loaded = false
 local LOGFILE = "TS.log"
 _G.LOG_LEVEL = 0
 local INFO_LEVEL = 4
+local logging = false
 
 ---@param source string
 local function file_stem(source)
@@ -27,6 +28,9 @@ end
 
 local file = fs.open(LOGFILE, "a")
 function _G.log(message)
+    if not logging then
+        return
+    end
     local stack = get_stack_info()
     local depth = math.min(INFO_LEVEL, #stack)
     local parts = {}
@@ -44,7 +48,7 @@ function _G.log(message)
     file.flush()
 end
 
-function _G.log_wrap(f)
+function _G._log_wrap(f)
     return function (...)
         _G.LOG_LEVEL = _G.LOG_LEVEL + 1
         local res = {pcall(f, ...)}
@@ -55,6 +59,14 @@ function _G.log_wrap(f)
             error(res[2], 0)
         end
     end
+end
+
+function debug.enable_logs()
+    logging = true
+end
+
+function debug.disable_logs()
+    logging = false
 end
 
 
@@ -89,14 +101,25 @@ end
 
 type_system.method_resolution_loop_breakers = {} -- For certain classes, this avoids circular references when resolving metamethods.
 
-loadfile("startup/ordered/class/builtins.lua")(type_system)
-loadfile("startup/ordered/class/object.lua")(type_system)
-loadfile("startup/ordered/class/type.lua")(type_system)
-loadfile("startup/ordered/class/overloading.lua")(type_system)
-for _, file in ipairs(fs.list("startup/ordered/class/functional")) do
-    loadfile("startup/ordered/class/functional/"..file)(type_system)
+local function make_env(to_add)
+    local env = {}
+    for key, value in pairs(_G) do
+        env[key] = value
+    end
+    for key, value in pairs(to_add) do
+        env[key] = value
+    end
+    return env
 end
-loadfile("startup/ordered/class/link.lua")(type_system)
+
+loadfile("/lib/class/builtins.lua", "t", make_env{type_system = type_system})()
+loadfile("/lib/class/object.lua", "t", make_env{type_system = type_system})()
+loadfile("/lib/class/type.lua", "t", make_env{type_system = type_system})()
+loadfile("/lib/class/overloading.lua", "t", make_env{type_system = type_system})()
+for _, file in ipairs(fs.list("/lib/class/functional")) do
+    loadfile("/lib/class/functional/"..file, "t", make_env{type_system = type_system})()
+end
+loadfile("/lib/class/link.lua", "t", make_env{type_system = type_system})()
 
 
 
@@ -182,4 +205,8 @@ type_system.old_setmetatable(type_system.builtins, {
 loaded = true
 add_to_G()
 
-log("Finished loading class system!\n\n")
+
+
+
+
+return type_system.builtins
