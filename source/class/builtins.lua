@@ -51,7 +51,6 @@ function type_system.type(value)
             return "table"
         else
             if rawequal(mt, type_system.pythonic_overloading_metatable) and type_system.old_type(rawget(value, "__dict")) == "table" and type_system.is_class(rawget(rawget(value, "__dict"), "__class")) then
-                _G.last_stack = get_stack_info()
                 return rawget(rawget(value, "__dict"), "__class")
             else
                 return mt

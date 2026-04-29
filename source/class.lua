@@ -22,6 +22,33 @@ local function file_stem(source)
     return name:gsub("%.lua$", "")
 end
 
+--- Returns all the available stack information
+---@return {current_line: integer, name: string?, func: function, source: string, short_source: string}[] info
+local function get_stack_info()
+    local level = 2
+    local stack = {}
+
+    while true do
+        local info = debug.getinfo(level)
+        if info then
+            local limited_info = {
+                current_line = info.currentline,
+                name = info.name,
+                func = info.func,
+                source = info.source,
+                short_source = info.short_src,
+                what = info.what
+            }
+            table.insert(stack, limited_info)
+            level = level + 1
+        else
+            return stack
+        end
+    end
+
+end
+
+
 if fs.exists(LOGFILE) then
     fs.delete(LOGFILE)
 end
