@@ -548,7 +548,7 @@ function type_system.pythonic_overloading_metatable.__tostring(self)
             return err_or_res
         end
     end
-    error("attempt to convert '"..tostring(type_system.type(self)).."' to string", 2)
+    error("attempt to convert '"..tostring(type_system.type(self)).."' to string ("..tostring(self.__dict.data)..")", 2)
 end
 
 function type_system.pythonic_overloading_metatable.__concat(self, other)
@@ -580,12 +580,12 @@ end
 function type_system.pythonic_overloading_metatable.__call(self, ...)
     local method = type_system.simple_resolve_metamethod(self, "__call")
     if method ~= nil then
-        local ok, err_or_res = pcall(method, self, ...)
-        if not ok then
-            error(err_or_res, 0)
+        local res = {pcall(method, self, ...)}
+        if not res[1] then
+            error(res[2], 0)
         end
-        if not rawequal(err_or_res, NotImplemented) then
-            return err_or_res
+        if not rawequal(res[2], NotImplemented) then
+            return table.unpack(res, 2)
         end
     end
     error("attempt to call '"..tostring(type_system.type(self)).."'", 2)
